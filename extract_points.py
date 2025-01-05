@@ -19,10 +19,10 @@ height, width = edges_array.shape
 edge_points = np.argwhere(edges_array > 128)
 
 # Step 3: Scale the points to fit the MS Paint canvas
-canvas_width = 800  # Width of MS Paint canvas
+canvas_width = 400  # Width of MS Paint canvas
 canvas_height = 600  # Height of MS Paint canvas
-scale_x = canvas_width / width
-scale_y = canvas_height / height
+scale_x = 1 # canvas_width / width
+scale_y = 1 # canvas_height / height
 
 # Scale the points
 scaled_points = [(int(x * scale_x), int(y * scale_y)) for y, x in edge_points]
