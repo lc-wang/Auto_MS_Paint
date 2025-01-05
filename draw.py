@@ -68,18 +68,24 @@ def draw_points(points):
     print("Starting to draw in 5 seconds. Switch to MS Paint...")
     time.sleep(5)
 
-    # Simulate drawing
-    pyautogui.mouseDown()
-    for x, y in points:
-        pyautogui.moveTo(x, y, duration=0.001)
-    pyautogui.mouseUp()
-    print("Drawing complete!")
+    # Start drawing
+    pyautogui.moveTo(points[0][0], points[0][1])
+
+    # Draw the points
+    for i in range(1, len(points)):
+        prev_x, prev_y = points[i - 1]
+        curr_x, curr_y = points[i]
+        # If the distance between points is small, draw; otherwise, lift the "pen"
+        if abs(curr_x - prev_x) <= 2 and abs(curr_y - prev_y) <= 2:
+            pyautogui.dragTo(curr_x, curr_y, duration=0.01, button="left")
+        else:
+            pyautogui.moveTo(curr_x, curr_y, duration=0.01)
 
 
 # Main execution
 if __name__ == "__main__":
     input_file = "pikachu_points.txt"  # Input points file
-    original_width = 400  # Original width of the drawing
+    original_width = 800  # Original width of the drawing
     original_height = 600  # Original height of the drawing
 
     # Get the canvas area
