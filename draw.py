@@ -4,15 +4,19 @@ import time
 
 def get_canvas_area():
     """
-    Manually or automatically determines the canvas area for MS Paint.
+    Prompts the user for margin values to determine the canvas area for MS Paint.
 
     Returns:
         tuple: (canvas_x, canvas_y, canvas_width, canvas_height)
     """
-    # Define margins for MS Paint UI
-    top_margin = 260    # Top menu
-    side_margin = 1000  # Side toolbar
-    bottom_margin = 100 # Bottom status bar
+    try:
+        # Get user input for margins with defaults
+        top_margin = int(input("Enter the top margin (default: 260): ").strip() or "260")
+        side_margin = int(input("Enter the side margin (default: 1000): ").strip() or "1000")
+        bottom_margin = int(input("Enter the bottom margin (default: 100): ").strip() or "100")
+    except ValueError:
+        print("Invalid input. Using default margin values: top=260, side=1000, bottom=100.")
+        top_margin, side_margin, bottom_margin = 260, 1000, 100
 
     # Get screen dimensions
     screen_width, screen_height = pyautogui.size()
@@ -77,11 +81,11 @@ def draw_points(points):
 
 # Main execution
 if __name__ == "__main__":
-    input_file = "pikachu_points.txt"  # Input points file
+    input_file = input("Enter the path to the points file (default: pikachu_points.txt): ").strip() or "pikachu_points.txt"
 
     # Get the canvas area
     canvas_x, canvas_y, canvas_width, canvas_height = get_canvas_area()
-    print(f"Canvas area detected: ({canvas_x}, {canvas_y}, {canvas_width}, {canvas_height})")
+    print(f"\nCanvas area detected: ({canvas_x}, {canvas_y}, {canvas_width}, {canvas_height})")
 
     # Read and adjust points to match the canvas position
     points = read_points(input_file, canvas_x, canvas_y)
