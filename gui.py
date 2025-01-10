@@ -15,6 +15,7 @@ class PaintApp:
         self.create_widgets()
         self.top_left = None
         self.bottom_right = None
+        self.rect = None
 
     def create_widgets(self):
         # Image Path
@@ -70,6 +71,13 @@ class PaintApp:
 
         def on_button_press(event):
             self.top_left = (event.x_root, event.y_root)
+            self.rect = self.capture_canvas.create_rectangle(
+                event.x, event.y, event.x, event.y, outline='red', width=2
+            )
+
+        def on_button_drag(event):
+            if self.rect:
+                self.capture_canvas.coords(self.rect, self.top_left[0], self.top_left[1], event.x_root, event.y_root)
 
         def on_button_release(event):
             self.bottom_right = (event.x_root, event.y_root)
@@ -80,8 +88,13 @@ class PaintApp:
         capture_window = tk.Toplevel(self.root)
         capture_window.attributes("-fullscreen", True)
         capture_window.attributes("-alpha", 0.3)  # Make it semi-transparent
-        capture_window.bind("<ButtonPress-1>", on_button_press)
-        capture_window.bind("<ButtonRelease-1>", on_button_release)
+
+        self.capture_canvas = tk.Canvas(capture_window, cursor="cross")
+        self.capture_canvas.pack(fill=tk.BOTH, expand=True)
+
+        self.capture_canvas.bind("<ButtonPress-1>", on_button_press)
+        self.capture_canvas.bind("<B1-Motion>", on_button_drag)
+        self.capture_canvas.bind("<ButtonRelease-1>", on_button_release)
 
         capture_window.mainloop()
 
