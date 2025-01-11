@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
+from tkinterdnd2 import TkinterDnD, DND_FILES  # Import TkinterDnD for drag-and-drop support
 import pyautogui
 import time
 from PIL import Image, ImageFilter, ImageGrab
@@ -8,46 +9,57 @@ from draw import draw_points
 from pynput import mouse
 
 
-class PaintApp:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("MS Paint Automation")
+class PaintApp(TkinterDnD.Tk):  # Inherit from TkinterDnD.Tk for drag-and-drop support
+    def __init__(self):
+        super().__init__()
+        self.title("MS Paint Automation")
         self.create_widgets()
         self.top_left = None
         self.bottom_right = None
-        self.rect = None
 
     def create_widgets(self):
         # Image Path
-        tk.Label(self.root, text="Image Path:").grid(row=0, column=0, padx=10, pady=5)
-        self.image_path_entry = tk.Entry(self.root, width=40)
+        tk.Label(self, text="Image Path:").grid(row=0, column=0, padx=10, pady=5)
+        self.image_path_entry = tk.Entry(self, width=40)
         self.image_path_entry.grid(row=0, column=1, padx=10, pady=5)
-        tk.Button(self.root, text="Browse", command=self.browse_image).grid(
+        tk.Button(self, text="Browse", command=self.browse_image).grid(
             row=0, column=2, padx=10, pady=5
         )
+        self.image_path_entry.drop_target_register(DND_FILES)
+        self.image_path_entry.dnd_bind('<<Drop>>', self.drop_image_file)
 
         # Output File Path
-        tk.Label(self.root, text="Output File:").grid(row=1, column=0, padx=10, pady=5)
-        self.output_file_entry = tk.Entry(self.root, width=40)
+        tk.Label(self, text="Output File:").grid(row=1, column=0, padx=10, pady=5)
+        self.output_file_entry = tk.Entry(self, width=40)
         self.output_file_entry.grid(row=1, column=1, padx=10, pady=5)
-        tk.Button(self.root, text="Browse", command=self.browse_output).grid(
+        tk.Button(self, text="Browse", command=self.browse_output).grid(
             row=1, column=2, padx=10, pady=5
         )
+        self.output_file_entry.drop_target_register(DND_FILES)
+        self.output_file_entry.dnd_bind('<<Drop>>', self.drop_output_file)
 
         # Set Canvas Area
-        tk.Button(self.root, text="Set Canvas Area", command=self.set_canvas_area).grid(
+        tk.Button(self, text="Set Canvas Area", command=self.set_canvas_area).grid(
             row=2, column=0, columnspan=3, pady=10
         )
 
         # Extract Points Button
-        tk.Button(self.root, text="Extract Points", command=self.extract_points).grid(
+        tk.Button(self, text="Extract Points", command=self.extract_points).grid(
             row=3, column=0, columnspan=3, pady=10
         )
 
         # Draw Points Button
-        tk.Button(self.root, text="Draw Points", command=self.draw_points).grid(
+        tk.Button(self, text="Draw Points", command=self.draw_points).grid(
             row=4, column=0, columnspan=3, pady=10
         )
+
+    def drop_image_file(self, event):
+        self.image_path_entry.delete(0, tk.END)
+        self.image_path_entry.insert(0, event.data.strip('{}'))
+
+    def drop_output_file(self, event):
+        self.output_file_entry.delete(0, tk.END)
+        self.output_file_entry.insert(0, event.data.strip('{}'))
 
     def browse_image(self):
         file_path = filedialog.askopenfilename(
@@ -85,7 +97,7 @@ class PaintApp:
             capture_window.destroy()
 
         # Create a transparent fullscreen window to capture mouse events
-        capture_window = tk.Toplevel(self.root)
+        capture_window = tk.Toplevel(self)
         capture_window.attributes("-fullscreen", True)
         capture_window.attributes("-alpha", 0.3)  # Make it semi-transparent
 
@@ -164,6 +176,5 @@ class PaintApp:
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = PaintApp(root)
-    root.mainloop()
+    app = PaintApp()
+    app.mainloop()
