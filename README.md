@@ -1,6 +1,6 @@
-# Auto_MS_Paint
+# auto-ms-paint-tool
 
-Auto_MS_Paint is a Python-based tool designed to automate the process of drawing in MS Paint. This tool extracts points from an image and reproduces them on the MS Paint canvas. It supports drag-and-drop file functionality and allows users to draw points either sequentially or in random order.
+auto-ms-paint-tool is a Python-based tool designed to automate the process of drawing in MS Paint. This tool extracts points from an image and reproduces them on the MS Paint canvas. It supports drag-and-drop file functionality and allows users to draw points either sequentially or in random order.
 
 ## Features
 
@@ -14,8 +14,8 @@ Auto_MS_Paint is a Python-based tool designed to automate the process of drawing
 
 1. **Clone the Repository**:
     ```bash
-    git clone https://github.com/lc-wang/Auto_MS_Paint.git
-    cd Auto_MS_Paint
+    git clone https://github.com/lc-wang/auto-ms-paint-tool.git
+    cd auto-ms-paint-tool
     ```
 
 2. **Install Dependencies**:
