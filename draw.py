@@ -1,5 +1,6 @@
 import pyautogui
 import time
+import random
 
 def get_canvas_area():
     """
@@ -24,8 +25,7 @@ def get_canvas_area():
 
     return canvas_x, canvas_y, canvas_width, canvas_height
 
-
-def draw_points(input_file, canvas_x, canvas_y):
+def draw_points(input_file, canvas_x, canvas_y, random_order=False):
     """
     Draws points from a file using PyAutoGUI.
 
@@ -33,6 +33,7 @@ def draw_points(input_file, canvas_x, canvas_y):
         input_file (str): Path to the points file.
         canvas_x (int): X-coordinate of the canvas's top-left corner.
         canvas_y (int): Y-coordinate of the canvas's top-left corner.
+        random_order (bool): Whether to draw points in random order.
     """
     adjusted_points = []
     with open(input_file, "r") as infile:
@@ -42,14 +43,13 @@ def draw_points(input_file, canvas_x, canvas_y):
             adjusted_y = y + canvas_y
             adjusted_points.append((adjusted_x, adjusted_y))
 
+    # Shuffle the points if random_order is True
+    if random_order:
+        random.shuffle(adjusted_points)
+
     print("Starting to draw in 5 seconds. Switch to MS Paint...")
     time.sleep(5)
 
     pyautogui.moveTo(adjusted_points[0][0], adjusted_points[0][1])
-    for i in range(1, len(adjusted_points)):
-        prev_x, prev_y = adjusted_points[i - 1]
-        curr_x, curr_y = adjusted_points[i]
-        if abs(curr_x - prev_x) <= 2 and abs(curr_y - prev_y) <= 2:
-            pyautogui.dragTo(curr_x, curr_y, duration=0.01, button="left")
-        else:
-            pyautogui.moveTo(curr_x, curr_y, duration=0.01)
+    for point in adjusted_points:
+        pyautogui.click(point[0], point[1])
