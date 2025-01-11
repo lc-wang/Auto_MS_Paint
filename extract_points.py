@@ -20,21 +20,33 @@ def extract_points(image_path, output_file, canvas_width, canvas_height):
     # Apply edge detection
     edges_image = grayscale_image.filter(ImageFilter.FIND_EDGES)
 
+    # Resize the image to fit the canvas while maintaining the aspect ratio
+    image_width, image_height = edges_image.size
+    aspect_ratio = image_width / image_height
+    if canvas_width / canvas_height > aspect_ratio:
+        new_height = canvas_height
+        new_width = int(new_height * aspect_ratio)
+    else:
+        new_width = canvas_width
+        new_height = int(new_width / aspect_ratio)
+
+    resized_image = edges_image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+
     # Convert edges to numpy array
-    edges_array = np.array(edges_image)
+    edges_array = np.array(resized_image)
     height, width = edges_array.shape
 
     # Extract edge points
     edge_points = np.argwhere(edges_array > 128)
 
-    # Scale points to fit canvas
-    scale_x = canvas_width / width
-    scale_y = canvas_height / height
-    scaled_points = [(int(x * scale_x), int(y * scale_y)) for y, x in edge_points]
+    # Center the image on the canvas
+    offset_x = (canvas_width - new_width) // 2
+    offset_y = (canvas_height - new_height) // 2
+    centered_points = [(x + offset_x, y + offset_y) for y, x in edge_points]
 
     # Save points to file
     with open(output_file, "w") as file:
-        for point in scaled_points:
+        for point in centered_points:
             file.write(f"{point[0]},{point[1]}\n")
 
-    print(f"Points extracted and saved to {output_file}. Total points: {len(scaled_points)}")
+    print(f"Points extracted and saved to {output_file}. Total points: {len(centered_points)}")
