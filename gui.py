@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from tkinterdnd2 import TkinterDnD, DND_FILES  # Import TkinterDnD for drag-and-drop support
+from tkinterdnd2 import TkinterDnD, DND_FILES
 import pyautogui
 import time
 from PIL import Image, ImageFilter, ImageGrab
@@ -13,6 +13,7 @@ class PaintApp(TkinterDnD.Tk):  # Inherit from TkinterDnD.Tk for drag-and-drop s
     def __init__(self):
         super().__init__()
         self.title("MS Paint Automation")
+        self.random_order_var = tk.BooleanVar()  # Variable to control drawing order
         self.create_widgets()
         self.top_left = None
         self.bottom_right = None
@@ -38,19 +39,24 @@ class PaintApp(TkinterDnD.Tk):  # Inherit from TkinterDnD.Tk for drag-and-drop s
         self.output_file_entry.drop_target_register(DND_FILES)
         self.output_file_entry.dnd_bind('<<Drop>>', self.drop_output_file)
 
+        # Random Order Checkbox
+        tk.Checkbutton(self, text="Draw in Random Order", variable=self.random_order_var).grid(
+            row=2, column=0, columnspan=3, pady=10
+        )
+
         # Set Canvas Area
         tk.Button(self, text="Set Canvas Area", command=self.set_canvas_area).grid(
-            row=2, column=0, columnspan=3, pady=10
+            row=3, column=0, columnspan=3, pady=10
         )
 
         # Extract Points Button
         tk.Button(self, text="Extract Points", command=self.extract_points).grid(
-            row=3, column=0, columnspan=3, pady=10
+            row=4, column=0, columnspan=3, pady=10
         )
 
         # Draw Points Button
         tk.Button(self, text="Draw Points", command=self.draw_points).grid(
-            row=4, column=0, columnspan=3, pady=10
+            row=5, column=0, columnspan=3, pady=10
         )
 
     def drop_image_file(self, event):
@@ -169,7 +175,7 @@ class PaintApp(TkinterDnD.Tk):  # Inherit from TkinterDnD.Tk for drag-and-drop s
             return
 
         try:
-            draw_points(output_file, self.canvas_x, self.canvas_y)
+            draw_points(output_file, self.canvas_x, self.canvas_y, self.random_order_var.get())
             messagebox.showinfo("Success", "Drawing completed!")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")
